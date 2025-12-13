@@ -1,16 +1,6 @@
-namespace FluentHttp;
+using FluentHttp.Request;
 
-public interface IResponse
-{
-    int StatusCode { get; }
-    string Content { get; }
-
-    T As<T>() where T : BaseResponse;
-    BaseResponse AssertStatus(int expectedStatus);
-    string? GetHeader(string name);
-    IRequest Header(string name, string value);
-    IRequest Rel(string href);
-}
+namespace FluentHttp.Response;
 
 /// <summary>
 /// Base HTTP response wrapper.
@@ -45,7 +35,7 @@ public class BaseResponse : IResponse
     /// <summary>
     /// Converts this response to a specific response type.
     /// </summary>
-    public T As<T>() where T : BaseResponse
+    public T As<T>() where T : IResponse
     {
         return (T)Activator.CreateInstance(typeof(T), _response)!;
     }
@@ -53,7 +43,7 @@ public class BaseResponse : IResponse
     /// <summary>
     /// Asserts that the response has the expected status code.
     /// </summary>
-    public BaseResponse AssertStatus(int expectedStatus)
+    public IResponse AssertStatus(int expectedStatus)
     {
         if (StatusCode != expectedStatus)
         {
@@ -87,7 +77,7 @@ public class BaseResponse : IResponse
         // If href is already an absolute URL, use it directly
         if (Uri.IsWellFormedUriString(href, UriKind.Absolute))
         {
-            return new Request(href);
+            return new BaseRequest(href);
         }
 
         // Otherwise, construct it relative to the current request
@@ -95,7 +85,7 @@ public class BaseResponse : IResponse
                       ?? throw new InvalidOperationException("Cannot determine base URI");
 
         var absoluteUri = new Uri(new Uri(baseUri), href).ToString();
-        return new Request(absoluteUri);
+        return new BaseRequest(absoluteUri);
     }
 
     /// <summary>

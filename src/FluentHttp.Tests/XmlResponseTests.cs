@@ -1,4 +1,5 @@
 using System.Net;
+using FluentHttp.Response;
 
 namespace FluentHttp.Tests;
 

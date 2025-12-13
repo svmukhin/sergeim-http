@@ -1,4 +1,4 @@
-namespace FluentHttp;
+namespace FluentHttp.Wire;
 
 /// <summary>
 /// Wire decorator that adds authorization header to requests.

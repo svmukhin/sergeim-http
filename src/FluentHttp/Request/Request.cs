@@ -1,9 +1,12 @@
-namespace FluentHttp;
+using FluentHttp.Response;
+using FluentHttp.Wire;
+
+namespace FluentHttp.Request;
 
 /// <summary>
 /// Fluent HTTP request builder.
 /// </summary>
-public class Request : IRequest
+public class BaseRequest : IRequest
 {
     public const string GET = "GET";
     public const string POST = "POST";
@@ -23,14 +26,14 @@ public class Request : IRequest
     /// <summary>
     /// Creates a new HTTP request with the specified base URI.
     /// </summary>
-    public Request(string uri) : this(uri, new HttpWire())
+    public BaseRequest(string uri) : this(uri, new HttpWire())
     {
     }
 
     /// <summary>
     /// Creates a new HTTP request with the specified base URI and wire.
     /// </summary>
-    public Request(string uri, IWire wire)
+    public BaseRequest(string uri, IWire wire)
     {
         _baseUri = uri;
         _headers = [];
@@ -49,7 +52,7 @@ public class Request : IRequest
     /// <summary>
     /// Sets the HTTP method for the request.
     /// </summary>
-    public Request Method(string method)
+    public IRequest Method(string method)
     {
         _method = method;
         return this;
@@ -58,7 +61,7 @@ public class Request : IRequest
     /// <summary>
     /// Adds a header to the request.
     /// </summary>
-    public Request Header(string name, string value)
+    public IRequest Header(string name, string value)
     {
         _headers[name] = value;
         return this;
@@ -67,7 +70,7 @@ public class Request : IRequest
     /// <summary>
     /// Sets the request body.
     /// </summary>
-    public Request Body(string body)
+    public IRequest Body(string body)
     {
         _body = body;
         return this;
@@ -76,7 +79,7 @@ public class Request : IRequest
     /// <summary>
     /// Changes the wire used to send the request.
     /// </summary>
-    public Request Through(IWire wire)
+    public IRequest Through(IWire wire)
     {
         _wire = wire;
         return this;

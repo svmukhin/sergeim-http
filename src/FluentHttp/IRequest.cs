@@ -1,3 +1,5 @@
+using FluentHttp.Response;
+
 namespace FluentHttp;
 
 /// <summary>
@@ -5,11 +7,11 @@ namespace FluentHttp;
 /// </summary>
 public interface IRequest
 {
-    Request Body(string body);
+    IRequest Body(string body);
     BaseResponse Fetch();
     Task<BaseResponse> FetchAsync();
-    Request Header(string name, string value);
-    Request Method(string method);
-    Request Through(IWire wire);
+    IRequest Header(string name, string value);
+    IRequest Method(string method);
+    IRequest Through(IWire wire);
     UriBuilder Uri();
 }

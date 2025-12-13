@@ -1,4 +1,4 @@
-namespace FluentHttp;
+namespace FluentHttp.Wire;
 
 /// <summary>
 /// Basic HTTP wire implementation using HttpClient.

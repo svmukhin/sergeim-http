@@ -1,3 +1,5 @@
+using FluentHttp.Response;
+
 namespace FluentHttp.Tests;
 
 [TestClass]

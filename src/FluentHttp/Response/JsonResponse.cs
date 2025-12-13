@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace FluentHttp;
+namespace FluentHttp.Response;
 
 /// <summary>
 /// HTTP response with JSON parsing capabilities.

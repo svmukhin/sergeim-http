@@ -1,7 +1,7 @@
 using System.Xml;
 using System.Xml.XPath;
 
-namespace FluentHttp;
+namespace FluentHttp.Response;
 
 /// <summary>
 /// HTTP response with XML parsing capabilities.
