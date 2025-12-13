@@ -6,7 +6,7 @@ namespace FluentHttp;
 /// <summary>
 /// HTTP response with XML parsing capabilities.
 /// </summary>
-public class XmlResponse : RestResponse
+public class XmlResponse : BaseResponse
 {
     private XmlDocument? _xmlDocument;
     private XPathNavigator? _navigator;
@@ -73,7 +73,7 @@ public class XmlResponse : RestResponse
     /// <summary>
     /// Creates a new request following a link from an XPath expression.
     /// </summary>
-    public new Request Rel(string xpath)
+    public new IRequest Rel(string xpath)
     {
         var href = EvaluateXPath(xpath);
         return base.Rel(href);

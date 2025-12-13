@@ -3,7 +3,7 @@ namespace FluentHttp;
 /// <summary>
 /// Fluent HTTP request builder.
 /// </summary>
-public class Request
+public class Request : IRequest
 {
     public const string GET = "GET";
     public const string POST = "POST";
@@ -67,7 +67,7 @@ public class Request
     /// <summary>
     /// Executes the HTTP request and returns a response.
     /// </summary>
-    public async Task<RestResponse> FetchAsync()
+    public async Task<BaseResponse> FetchAsync()
     {
         var uri = _uriBuilder?.Build() ?? _baseUri;
         using var client = new HttpClient();
@@ -81,13 +81,13 @@ public class Request
             request.Content = new StringContent(_body);
         }
         var response = await client.SendAsync(request);
-        return new RestResponse(response);
+        return new BaseResponse(response);
     }
 
     /// <summary>
     /// Executes the HTTP request synchronously and returns a response.
     /// </summary>
-    public RestResponse Fetch()
+    public BaseResponse Fetch()
     {
         return FetchAsync().GetAwaiter().GetResult();
     }

@@ -1,16 +1,26 @@
-using System.Net;
-
 namespace FluentHttp;
+
+public interface IResponse
+{
+    int StatusCode { get; }
+    string Content { get; }
+
+    T As<T>() where T : BaseResponse;
+    BaseResponse AssertStatus(int expectedStatus);
+    string? GetHeader(string name);
+    IRequest Header(string name, string value);
+    IRequest Rel(string href);
+}
 
 /// <summary>
 /// Base HTTP response wrapper.
 /// </summary>
-public class RestResponse
+public class BaseResponse : IResponse
 {
     protected readonly HttpResponseMessage _response;
     protected string? _content;
 
-    public RestResponse(HttpResponseMessage response)
+    public BaseResponse(HttpResponseMessage response)
     {
         _response = response;
     }
@@ -35,7 +45,7 @@ public class RestResponse
     /// <summary>
     /// Converts this response to a specific response type.
     /// </summary>
-    public T As<T>() where T : RestResponse
+    public T As<T>() where T : BaseResponse
     {
         return (T)Activator.CreateInstance(typeof(T), _response)!;
     }
@@ -43,7 +53,7 @@ public class RestResponse
     /// <summary>
     /// Asserts that the response has the expected status code.
     /// </summary>
-    public RestResponse AssertStatus(int expectedStatus)
+    public BaseResponse AssertStatus(int expectedStatus)
     {
         if (StatusCode != expectedStatus)
         {
@@ -72,7 +82,7 @@ public class RestResponse
     /// <summary>
     /// Creates a new request following a link relation.
     /// </summary>
-    public Request Rel(string href)
+    public IRequest Rel(string href)
     {
         // If href is already an absolute URL, use it directly
         if (Uri.IsWellFormedUriString(href, UriKind.Absolute))
@@ -91,7 +101,7 @@ public class RestResponse
     /// <summary>
     /// Adds a header to a new request (for chaining).
     /// </summary>
-    public Request Header(string name, string value)
+    public IRequest Header(string name, string value)
     {
         throw new InvalidOperationException(
             "Cannot add headers directly to a response. Use Rel() to create a new request first.");

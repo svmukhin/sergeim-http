@@ -5,13 +5,13 @@ namespace FluentHttp;
 /// <summary>
 /// Fluent URI builder for constructing request URIs.
 /// </summary>
-public class UriBuilder
+public class UriBuilder : IUriBuilder
 {
-    private readonly Request _request;
+    private readonly IRequest _request;
     private readonly StringBuilder _path;
     private readonly Dictionary<string, string> _queryParams;
 
-    internal UriBuilder(Request request, string baseUri)
+    internal UriBuilder(IRequest request, string baseUri)
     {
         _request = request;
         _path = new StringBuilder();
@@ -33,7 +33,7 @@ public class UriBuilder
     /// <summary>
     /// Appends a path segment to the URI.
     /// </summary>
-    public UriBuilder Path(string pathSegment)
+    public IUriBuilder Path(string pathSegment)
     {
         if (!pathSegment.StartsWith("/"))
         {
@@ -46,7 +46,7 @@ public class UriBuilder
     /// <summary>
     /// Adds a query parameter to the URI.
     /// </summary>
-    public UriBuilder QueryParam(string name, object value)
+    public IUriBuilder QueryParam(string name, object value)
     {
         _queryParams[name] = value.ToString() ?? string.Empty;
         return this;
@@ -55,7 +55,7 @@ public class UriBuilder
     /// <summary>
     /// Returns back to the Request object.
     /// </summary>
-    public Request Back()
+    public IRequest Back()
     {
         return _request;
     }

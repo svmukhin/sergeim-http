@@ -5,7 +5,7 @@ namespace FluentHttp;
 /// <summary>
 /// HTTP response with JSON parsing capabilities.
 /// </summary>
-public class JsonResponse : RestResponse
+public class JsonResponse : BaseResponse
 {
     private JsonDocument? _jsonDocument;
     private JsonElement? _rootElement;
