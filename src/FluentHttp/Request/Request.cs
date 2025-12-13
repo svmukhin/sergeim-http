@@ -18,14 +18,23 @@ public class Request : IRequest
     private string _method = GET;
     private readonly Dictionary<string, string> _headers;
     private string? _body;
+    private readonly IWire _wire;
 
     /// <summary>
     /// Creates a new HTTP request with the specified base URI.
     /// </summary>
-    public Request(string uri)
+    public Request(string uri) : this(uri, new HttpWire())
+    {
+    }
+
+    /// <summary>
+    /// Creates a new HTTP request with the specified base URI and wire.
+    /// </summary>
+    public Request(string uri, IWire wire)
     {
         _baseUri = uri;
         _headers = [];
+        _wire = wire;
     }
 
     /// <summary>
@@ -70,17 +79,7 @@ public class Request : IRequest
     public async Task<BaseResponse> FetchAsync()
     {
         var uri = _uriBuilder?.Build() ?? _baseUri;
-        using var client = new HttpClient();
-        using var request = new HttpRequestMessage(new HttpMethod(_method), uri);
-        foreach (var header in _headers)
-        {
-            request.Headers.TryAddWithoutValidation(header.Key, header.Value);
-        }
-        if (_body != null)
-        {
-            request.Content = new StringContent(_body);
-        }
-        var response = await client.SendAsync(request);
+        var response = await _wire.SendAsync(_method, uri, _headers, _body);
         return new BaseResponse(response);
     }
 
