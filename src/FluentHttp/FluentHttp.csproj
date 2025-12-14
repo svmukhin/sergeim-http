@@ -17,7 +17,7 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <!-- Release Notes -->
-        <PackageReleaseNotes>See release notes at: https://github.com/svmukhin/fluent-http/releases/tag/v$(VersionPrefix)</PackageReleaseNotes>
+        <PackageReleaseNotes>See release notes at: https://github.com/svmukhin/fluent-http/releases/tag/$(VersionPrefix)</PackageReleaseNotes>
         <!-- Source Link -->
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
