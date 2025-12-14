@@ -12,5 +12,7 @@
                         Version="3.0.4" />
         <PackageVersion Include="coverlet.collector"
                         Version="6.0.0" />
+        <PackageVersion Include="Microsoft.SourceLink.GitHub"
+                        Version="8.0.0" />
     </ItemGroup>
 </Project>

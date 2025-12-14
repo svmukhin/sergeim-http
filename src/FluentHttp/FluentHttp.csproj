@@ -1,2 +1,38 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
-<Project Sdk="Microsoft.NET.Sdk" />
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <!-- Package Metadata -->
+        <PackageId>FluentHttp</PackageId>
+        <Title>FluentHttp</Title>
+        <Description>A fluent HTTP client library for .NET that provides a pure OOP approach to building and executing HTTP requests with method chaining. Supports wire decorators for authorization, retries, and custom request handling.</Description>
+        <Authors>Sergei Mukhin</Authors>
+        <Company>Sergei Mukhin</Company>
+        <Copyright>Copyright © 2025 Sergei Mukhin</Copyright>
+        <!-- Package Details -->
+        <PackageTags>http;fluent;rest;api;client;http-client;rest-client;fluent-api;wire;decorator</PackageTags>
+        <PackageProjectUrl>https://github.com/svmukhin/fluent-http</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/svmukhin/fluent-http</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <!-- Release Notes -->
+        <PackageReleaseNotes>See release notes at: https://github.com/svmukhin/fluent-http/releases/tag/v$(VersionPrefix)</PackageReleaseNotes>
+        <!-- Source Link -->
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <!-- Documentation -->
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="..\..\README.md"
+              Pack="true"
+              PackagePath="\" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub"
+                          PrivateAssets="All" />
+    </ItemGroup>
+</Project>

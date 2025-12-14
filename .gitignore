@@ -366,3 +366,4 @@ FodyWeavers.xsd
 .artifacts/
 
 .vscode/
+.nupkg/
