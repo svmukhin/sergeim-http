@@ -18,6 +18,22 @@ public interface IRequest
     IRequest Body(string body);
 
     /// <summary>
+    /// Sets the request body content with a specific Content-Type.
+    /// </summary>
+    /// <param name="body">The body content to send with the request.</param>
+    /// <param name="contentType">The Content-Type header value (e.g., "application/json").</param>
+    /// <returns>The current request instance for method chaining.</returns>
+    IRequest Body(string body, string contentType);
+
+    /// <summary>
+    /// Sets the request body as JSON by serializing the provided object.
+    /// Automatically sets Content-Type to application/json.
+    /// </summary>
+    /// <param name="obj">The object to serialize as JSON.</param>
+    /// <returns>The current request instance for method chaining.</returns>
+    IRequest JsonBody(object obj);
+
+    /// <summary>
     /// Executes the HTTP request synchronously and returns the response.
     /// </summary>
     /// <returns>The HTTP response.</returns>

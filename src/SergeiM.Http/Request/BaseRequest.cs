@@ -31,6 +31,7 @@ public class BaseRequest : IRequest
     private string _method = GET;
     private readonly Dictionary<string, string> _headers;
     private string? _body;
+    private string? _contentType;
     private IWire _wire;
 
     /// <summary>
@@ -79,6 +80,22 @@ public class BaseRequest : IRequest
     }
 
     /// <inheritdoc/>
+    public IRequest Body(string body, string contentType)
+    {
+        _body = body;
+        _contentType = contentType;
+        return this;
+    }
+
+    /// <inheritdoc/>
+    public IRequest JsonBody(object obj)
+    {
+        _body = System.Text.Json.JsonSerializer.Serialize(obj);
+        _contentType = MediaType.APPLICATION_JSON;
+        return this;
+    }
+
+    /// <inheritdoc/>
     public IRequest Through(IWire wire)
     {
         _wire = wire;
@@ -89,7 +106,15 @@ public class BaseRequest : IRequest
     public async Task<BaseResponse> FetchAsync()
     {
         var uri = _uriBuilder?.Build() ?? _baseUri;
-        var response = await _wire.SendAsync(_method, uri, _headers, _body);
+        var headers = new Dictionary<string, string>(_headers);
+        
+        // Add Content-Type header if body and contentType are set
+        if (_body != null && _contentType != null && !headers.ContainsKey(HttpHeaders.CONTENT_TYPE))
+        {
+            headers[HttpHeaders.CONTENT_TYPE] = _contentType;
+        }
+        
+        var response = await _wire.SendAsync(_method, uri, headers, _body);
         return new BaseResponse(response);
     }
 

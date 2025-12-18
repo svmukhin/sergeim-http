@@ -30,13 +30,22 @@ public class HttpWire : IWire
     public async Task<HttpResponseMessage> SendAsync(string method, string uri, Dictionary<string, string> headers, string? body = null)
     {
         using var request = new HttpRequestMessage(new HttpMethod(method), uri);
-        foreach (var header in headers)
+        string? contentType = null;
+        var headersCopy = new Dictionary<string, string>(headers);
+        if (headersCopy.ContainsKey("Content-Type"))
+        {
+            contentType = headersCopy["Content-Type"];
+            headersCopy.Remove("Content-Type");
+        }
+        foreach (var header in headersCopy)
         {
             request.Headers.TryAddWithoutValidation(header.Key, header.Value);
         }
         if (body != null)
         {
-            request.Content = new StringContent(body);
+            request.Content = contentType != null 
+                ? new StringContent(body, System.Text.Encoding.UTF8, contentType)
+                : new StringContent(body);
         }
         return await _client.SendAsync(request);
     }
