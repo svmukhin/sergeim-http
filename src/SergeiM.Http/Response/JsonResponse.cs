@@ -3,6 +3,7 @@
 
 using System.Text.Json;
 using SergeiM.Json;
+using SergeiM.Json.IO;
 
 namespace SergeiM.Http.Response;
 
@@ -31,7 +32,7 @@ public class JsonResponse : BaseResponse
         {
             if (_jsonValue == null)
             {
-                using var reader = SergeiM.Json.Json.CreateReader(new StringReader(Content));
+                using var reader = JsonReader.Create(new StringReader(Content));
                 _jsonValue = reader.Read();
             }
             return _jsonValue;
