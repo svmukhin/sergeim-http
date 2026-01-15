@@ -36,7 +36,7 @@ public class BaseRequest : IRequest
     /// <summary>
     /// Creates a new HTTP request with the specified base URI.
     /// </summary>
-    public BaseRequest(string uri) 
+    public BaseRequest(string uri)
         : this(uri, new HttpWire())
     {
     }
@@ -46,7 +46,7 @@ public class BaseRequest : IRequest
     /// </summary>
     /// <param name="uri">The base URI.</param>
     /// <param name="wire">The wire implementation.</param>
-    public BaseRequest(string uri, IWire wire) 
+    public BaseRequest(string uri, IWire wire)
         : this(uri, wire, GET, [], null, null)
     {
     }
@@ -57,7 +57,7 @@ public class BaseRequest : IRequest
     /// <param name="uri">The base URI.</param>
     /// <param name="wire">The wire implementation.</param>
     /// <param name="method">The HTTP method.</param>
-    public BaseRequest(string uri, IWire wire, string method) 
+    public BaseRequest(string uri, IWire wire, string method)
         : this(uri, wire, method, [], null, null)
     {
     }
@@ -69,7 +69,7 @@ public class BaseRequest : IRequest
     /// <param name="wire">The wire implementation.</param>
     /// <param name="method">The HTTP method.</param>
     /// <param name="headers">The HTTP headers.</param>
-    public BaseRequest(string uri, IWire wire, string method, Dictionary<string, string> headers) 
+    public BaseRequest(string uri, IWire wire, string method, Dictionary<string, string> headers)
         : this(uri, wire, method, headers, null, null)
     {
     }

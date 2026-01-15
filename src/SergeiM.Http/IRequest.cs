@@ -74,7 +74,7 @@ public interface IRequest
     /// <param name="uri">The new base URI.</param>
     /// <returns>A new request instance with the updated URI.</returns>
     IRequest Uri(string uri);
-    
+
     /// <summary>
     /// Gets the URI builder for constructing the request URI with path segments and query parameters.
     /// </summary>
