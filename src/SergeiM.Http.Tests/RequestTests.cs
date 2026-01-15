@@ -47,11 +47,11 @@ public class RequestTests
     }
 
     [TestMethod]
-    public void UriBuilder_ShouldReturnToRequest()
+    public void UriBuilder_ShouldReturnNewRequest()
     {
         var request = new BaseRequest("https://www.example.com");
         var back = request.Uri().Path("/test").Back();
-        Assert.AreSame(request, back);
+        Assert.AreNotSame(request, back);
     }
 
     // @todo This test would require mocking HttpClient

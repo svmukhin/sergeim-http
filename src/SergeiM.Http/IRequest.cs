@@ -14,7 +14,7 @@ public interface IRequest
     /// Sets the request body content.
     /// </summary>
     /// <param name="body">The body content to send with the request.</param>
-    /// <returns>The current request instance for method chaining.</returns>
+    /// <returns>The new request instance with the updated body content.</returns>
     IRequest Body(string body);
 
     /// <summary>
@@ -22,7 +22,7 @@ public interface IRequest
     /// </summary>
     /// <param name="body">The body content to send with the request.</param>
     /// <param name="contentType">The Content-Type header value (e.g., "application/json").</param>
-    /// <returns>The current request instance for method chaining.</returns>
+    /// <returns>The new request instance with the updated body content and content type.</returns>
     IRequest Body(string body, string contentType);
 
     /// <summary>
@@ -30,7 +30,7 @@ public interface IRequest
     /// Automatically sets Content-Type to application/json.
     /// </summary>
     /// <param name="obj">The object to serialize as JSON.</param>
-    /// <returns>The current request instance for method chaining.</returns>
+    /// <returns>The new request instance with the updated body content.</returns>
     IRequest JsonBody(object obj);
 
     /// <summary>
@@ -50,14 +50,14 @@ public interface IRequest
     /// </summary>
     /// <param name="name">The header name.</param>
     /// <param name="value">The header value.</param>
-    /// <returns>The current request instance for method chaining.</returns>
+    /// <returns>The new request instance with the updated header.</returns>
     IRequest Header(string name, string value);
 
     /// <summary>
     /// Sets the HTTP method for the request (GET, POST, PUT, DELETE, etc.).
     /// </summary>
     /// <param name="method">The HTTP method to use.</param>
-    /// <returns>The current request instance for method chaining.</returns>
+    /// <returns>The new request instance with the updated HTTP method.</returns>
     IRequest Method(string method);
 
     /// <summary>
@@ -65,12 +65,19 @@ public interface IRequest
     /// Allows wrapping with decorators for additional functionality like authorization, retries, etc.
     /// </summary>
     /// <param name="wire">The wire implementation to use for sending the request.</param>
-    /// <returns>The current request instance for method chaining.</returns>
+    /// <returns>The new request instance with the updated wire implementation.</returns>
     IRequest Through(IWire wire);
+
+    /// <summary>
+    /// Sets a new base URI for the request.
+    /// </summary>
+    /// <param name="uri">The new base URI.</param>
+    /// <returns>A new request instance with the updated URI.</returns>
+    IRequest Uri(string uri);
 
     /// <summary>
     /// Gets the URI builder for constructing the request URI with path segments and query parameters.
     /// </summary>
     /// <returns>A URI builder instance for fluent URI construction.</returns>
-    UriBuilder Uri();
+    IUriBuilder Uri();
 }

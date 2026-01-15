@@ -54,7 +54,7 @@ public class UriBuilder : IUriBuilder
     /// <inheritdoc/>
     public IRequest Back()
     {
-        return _request;
+        return _request.Uri(Build());
     }
 
     /// <inheritdoc/>
