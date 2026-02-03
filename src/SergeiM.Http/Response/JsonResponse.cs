@@ -32,7 +32,7 @@ public class JsonResponse : BaseResponse
         {
             if (_jsonValue == null)
             {
-                using var reader = JsonReader.Create(new StringReader(Content));
+                using var reader = new JsonReader(new StringReader(Content));
                 _jsonValue = reader.Read();
             }
             return _jsonValue;
