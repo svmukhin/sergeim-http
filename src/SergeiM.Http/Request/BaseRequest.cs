@@ -106,7 +106,7 @@ public class BaseRequest : IRequest
     }
 
     /// <inheritdoc/>
-    public IRequest Uri(string uri)
+    public IRequest WithUri(string uri)
     {
         return new BaseRequest(uri, _wire, _method, _headers, _body, _contentType);
     }

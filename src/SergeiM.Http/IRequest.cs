@@ -69,15 +69,15 @@ public interface IRequest
     IRequest Through(IWire wire);
 
     /// <summary>
-    /// Sets a new base URI for the request.
-    /// </summary>
-    /// <param name="uri">The new base URI.</param>
-    /// <returns>A new request instance with the updated URI.</returns>
-    IRequest Uri(string uri);
-
-    /// <summary>
     /// Gets the URI builder for constructing the request URI with path segments and query parameters.
     /// </summary>
     /// <returns>A URI builder instance for fluent URI construction.</returns>
     IUriBuilder Uri();
+
+    /// <summary>
+    /// Creates a new request with a different base URI while preserving other state.
+    /// </summary>
+    /// <param name="uri">The new base URI.</param>
+    /// <returns>A new request instance with the updated URI.</returns>
+    IRequest WithUri(string uri);
 }
