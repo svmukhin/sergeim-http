@@ -44,6 +44,25 @@ public class JsonResponseTests
         Assert.AreEqual("banana", items.GetString(1));
     }
 
+    [TestMethod]
+    public void JsonResponse_AssertStatus_ShouldReturnJsonResponse()
+    {
+        var json = @"{""result"": ""success""}";
+        var response = new JsonResponse(CreateMockJsonResponse(json));
+        var result = response.AssertStatus(200).AsObject();
+        Assert.AreEqual("success", result.GetString("result"));
+    }
+
+    [TestMethod]
+    public void JsonResponse_AssertStatus_AfterAs_ShouldAllowChaining()
+    {
+        var json = @"{""value"": 42}";
+        var httpResponse = CreateMockJsonResponse(json);
+        var baseResponse = new BaseResponse(httpResponse);
+        var result = baseResponse.As<JsonResponse>().AssertStatus(200).AsObject();
+        Assert.AreEqual(42, result.GetInt("value"));
+    }
+
     private static HttpResponseMessage CreateMockJsonResponse(string json)
     {
         var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK)

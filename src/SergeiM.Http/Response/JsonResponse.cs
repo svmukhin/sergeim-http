@@ -81,4 +81,16 @@ public class JsonResponse : BaseResponse
     {
         return JsonSerializer.Deserialize<T>(Content, options);
     }
+
+    /// <summary>
+    /// Asserts that the response has the expected status code.
+    /// </summary>
+    /// <param name="expectedStatus">The expected HTTP status code.</param>
+    /// <returns>The current JsonResponse instance for method chaining.</returns>
+    /// <exception cref="HttpRequestException">Thrown when the actual status code doesn't match the expected value.</exception>
+    public new JsonResponse AssertStatus(int expectedStatus)
+    {
+        base.AssertStatus(expectedStatus);
+        return this;
+    }
 }

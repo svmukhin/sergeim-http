@@ -77,10 +77,22 @@ public class XmlResponse : BaseResponse
         return result?.ToString() ?? string.Empty;
     }
 
-    /// <inheritdoc/>j
+    /// <inheritdoc/>
     public override IRequest Rel(string xpath)
     {
         var href = EvaluateXPath(xpath);
         return base.Rel(href);
+    }
+
+    /// <summary>
+    /// Asserts that the response has the expected status code.
+    /// </summary>
+    /// <param name="expectedStatus">The expected HTTP status code.</param>
+    /// <returns>The current XmlResponse instance for method chaining.</returns>
+    /// <exception cref="HttpRequestException">Thrown when the actual status code doesn't match the expected value.</exception>
+    public new XmlResponse AssertStatus(int expectedStatus)
+    {
+        base.AssertStatus(expectedStatus);
+        return this;
     }
 }
