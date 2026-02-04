@@ -54,6 +54,27 @@ public class RequestTests
         Assert.AreNotSame(request, back);
     }
 
+    [TestMethod]
+    public void WithUri_ShouldReturnNewRequest()
+    {
+        var request = new BaseRequest("https://www.example.com");
+        var newRequest = request.WithUri("https://api.example.com");
+        Assert.IsNotNull(newRequest);
+        Assert.AreNotSame(request, newRequest);
+    }
+
+    [TestMethod]
+    public void WithUri_ShouldAllowFurtherUriBuilding()
+    {
+        var uri = new BaseRequest("https://old.example.com")
+            .WithUri("https://new.example.com")
+            .Uri()
+            .Path("/api")
+            .QueryParam("version", 2)
+            .Build();
+        Assert.AreEqual("https://new.example.com/api?version=2", uri);
+    }
+
     // @todo This test would require mocking HttpClient
     //  Left as a placeholder for integration testing
     [TestMethod]
