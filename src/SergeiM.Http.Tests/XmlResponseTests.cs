@@ -68,6 +68,31 @@ public class XmlResponseTests
         Assert.AreEqual("/api/details/456", href);
     }
 
+    [TestMethod]
+    public void XmlResponse_AssertStatus_ShouldReturnXmlResponse()
+    {
+        var xml = """
+            <?xml version="1.0"?>
+            <result>success</result>
+            """;
+        var response = new XmlResponse(CreateMockXmlResponse(xml));
+        var result = response.AssertStatus(200).EvaluateXPath("/result");
+        Assert.AreEqual("success", result);
+    }
+
+    [TestMethod]
+    public void XmlResponse_AssertStatus_AfterAs_ShouldAllowChaining()
+    {
+        var xml = """
+            <?xml version="1.0"?>
+            <data><value>test</value></data>
+            """;
+        var httpResponse = CreateMockXmlResponse(xml);
+        var baseResponse = new BaseResponse(httpResponse);
+        var result = baseResponse.As<XmlResponse>().AssertStatus(200).EvaluateXPath("/data/value");
+        Assert.AreEqual("test", result);
+    }
+
     private static HttpResponseMessage CreateMockXmlResponse(string xml)
     {
         var response = new HttpResponseMessage(HttpStatusCode.OK)
