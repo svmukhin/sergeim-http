@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: Copyright (c) [2025-2026] [Sergei Mukhin]
 // SPDX-License-Identifier: MIT
 
+using System.Net.Http.Headers;
+
 namespace SergeiM.Http.Wire;
 
 /// <summary>
@@ -44,7 +46,7 @@ public class HttpWire : IWire
         if (body != null)
         {
             request.Content = contentType != null
-                ? new StringContent(body, System.Text.Encoding.UTF8, contentType)
+                ? new StringContent(body, System.Text.Encoding.UTF8, MediaTypeHeaderValue.Parse(contentType))
                 : new StringContent(body);
         }
         return await _client.SendAsync(request);
