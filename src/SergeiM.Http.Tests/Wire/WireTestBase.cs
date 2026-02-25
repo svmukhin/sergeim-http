@@ -70,4 +70,54 @@ public abstract class WireTestBase
         var response = CreateWire(new HttpClient(handler)).Send("GET", "https://api.example.com", []);
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
     }
+
+    [TestMethod]
+    public async Task SendAsync_ShouldSetContentType_WhenBareMediaType()
+    {
+        var handler = new MockHttpMessageHandler((request) =>
+        {
+            var ct = request.Content!.Headers.ContentType;
+            Assert.AreEqual("application/json", ct!.MediaType);
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        });
+        await CreateWire(new HttpClient(handler)).SendAsync("POST", "https://api.example.com", new Dictionary<string, string>
+        {
+            ["Content-Type"] = "application/json"
+        }, "{\"test\":\"data\"}");
+    }
+
+    [TestMethod]
+    public async Task SendAsync_ShouldSetContentType_WhenContentTypeHasCharsetParameter()
+    {
+        var handler = new MockHttpMessageHandler((request) =>
+        {
+            var ct = request.Content!.Headers.ContentType;
+            Assert.AreEqual("text/xml", ct!.MediaType);
+            Assert.AreEqual("utf-8", ct.CharSet);
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        });
+        await CreateWire(new HttpClient(handler)).SendAsync("POST", "https://api.example.com", new Dictionary<string, string>
+        {
+            ["Content-Type"] = "text/xml; charset=utf-8"
+        }, "<root/>");
+    }
+
+    [TestMethod]
+    public async Task SendAsync_ShouldSetContentType_WhenContentTypeHasActionParameter()
+    {
+        const string soapAction = "http://example.com/MyService/MyAction";
+        var handler = new MockHttpMessageHandler((request) =>
+        {
+            var ct = request.Content!.Headers.ContentType;
+            Assert.AreEqual("application/soap+xml", ct!.MediaType);
+            var actionParam = ct.Parameters.FirstOrDefault(p => p.Name == "action");
+            Assert.IsNotNull(actionParam);
+            Assert.AreEqual($"\"{soapAction}\"", actionParam.Value);
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        });
+        await CreateWire(new HttpClient(handler)).SendAsync("POST", "https://api.example.com", new Dictionary<string, string>
+        {
+            ["Content-Type"] = $"application/soap+xml; action=\"{soapAction}\""
+        }, "<Envelope/>");
+    }
 }
