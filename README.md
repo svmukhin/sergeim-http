@@ -207,6 +207,25 @@ dotnet build
 dotnet test
 ```
 
+## Conventional Commits
+
+This project follows [Conventional Commits](https://www.conventionalcommits.org/)
+to automate versioning and changelog generation via
+[release-please](https://github.com/googleapis/release-please).
+
+| Type       | Purpose                              | Bump    |
+| ---------- | ------------------------------------ | ------- |
+| `feat`     | New feature                          | minor   |
+| `fix`      | Bug fix                              | patch   |
+| `docs`     | Documentation only changes           | —       |
+| `style`    | Code style (formatting, whitespace)  | —       |
+| `refactor` | Code refactoring                     | —       |
+| `test`     | Adding or updating tests             | —       |
+| `chore`    | Maintenance (CI, deps, etc.)         | —       |
+
+Breaking changes are signaled with `!` after the type (`feat!:`)
+or a `BREAKING CHANGE:` footer — triggers a major bump.
+
 ## License
 
 See [LICENSE.txt](LICENSE.txt) for details.
