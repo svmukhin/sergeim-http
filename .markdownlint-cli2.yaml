@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: 2026 Sergei Mukhin
+# SPDX-License-Identifier: MIT
+---
+gitignore: true
+ignores:
+  - CHANGELOG.md
+config:
+  MD013:
+    code_blocks: false
+    tables: false
+    headings: false
+  MD033:
+    allowed_elements:
+      - br
+      - details
+      - summary
+  MD041: false
+  MD024:
+    siblings_only: true

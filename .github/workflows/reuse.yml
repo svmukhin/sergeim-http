@@ -1,23 +1,19 @@
 # SPDX-FileCopyrightText: Copyright (c) [2025-2026] [Sergei Mukhin]
 # SPDX-License-Identifier: MIT
 ---
-name: markdown-lint
-"on":
+# yamllint disable rule:line-length
+name: reuse
+'on':
   push:
     branches:
       - master
   pull_request:
     branches:
       - master
-concurrency:
-  group: markdown-lint-${{ github.ref }}
-  cancel-in-progress: true
 jobs:
-  markdown-lint:
+  reuse:
     timeout-minutes: 15
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
-      - uses: DavidAnson/markdownlint-cli2-action@v22.0.0
-        with:
-          config: .markdownlint-cli2.yaml
+      - uses: fsfe/reuse-action@v6
