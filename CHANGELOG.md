@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/svmukhin/sergeim-http/compare/v0.5.0...v0.5.1) (2026-06-24)
+
+
+### Miscellaneous
+
+* **#14:** fix version prefix in ReleasePackageNotes link ([a5a6dd9](https://github.com/svmukhin/sergeim-http/commit/a5a6dd96d30a0143decb77cfdacee2d979a8dbb0))
+
 ## [0.5.0](https://github.com/svmukhin/sergeim-http/compare/0.4.1...v0.5.0) (2026-06-24)
 
 
