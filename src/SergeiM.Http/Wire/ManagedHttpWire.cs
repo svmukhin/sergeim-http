@@ -26,7 +26,7 @@ public class ManagedHttpWire : IWire
         HttpClient client = _createClient();
         try
         {
-            using var request = WireHelper.BuildRequest(method, uri, headers, body);
+            using HttpRequestMessage request = WireHelper.BuildRequest(method, uri, headers, body);
             return await client.SendAsync(request);
         }
         finally
