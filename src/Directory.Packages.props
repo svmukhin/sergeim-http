@@ -2,13 +2,20 @@
 <Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
-    <PackageVersion Include="MSTest.TestAdapter" Version="3.0.4" />
-    <PackageVersion Include="MSTest.TestFramework" Version="3.0.4" />
-    <PackageVersion Include="coverlet.collector" Version="6.0.0" />
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
-    <PackageVersion Include="SergeiM.Json" Version="0.2.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk"
+                    Version="17.6.0" />
+    <PackageVersion Include="MSTest.TestAdapter"
+                    Version="3.0.4" />
+    <PackageVersion Include="MSTest.TestFramework"
+                    Version="3.0.4" />
+    <PackageVersion Include="coverlet.collector"
+                    Version="6.0.0" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub"
+                    Version="8.0.0" />
+    <PackageVersion Include="SergeiM.Json"
+                    Version="0.2.0" />
   </ItemGroup>
 </Project>
