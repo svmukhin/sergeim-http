@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/svmukhin/sergeim-http/compare/v0.6.0...v0.6.1) (2026-07-21)
+
+
+### Bug Fixes
+
+* added debug symbols to nuget package ([c6a4e3f](https://github.com/svmukhin/sergeim-http/commit/c6a4e3fa2e0278c9f31fa1d005d5db4041d25f0c))
+
 ## [0.6.0](https://github.com/svmukhin/sergeim-http/compare/v0.5.0...v0.6.0) (2026-07-21)
 
 
