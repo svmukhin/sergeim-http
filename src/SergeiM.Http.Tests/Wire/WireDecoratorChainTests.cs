@@ -98,4 +98,18 @@ public class WireDecoratorChainTests
         HttpResponseMessage response = await wire.SendAsync("GET", "https://api.example.com", []);
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
     }
+
+    [TestMethod]
+    public async Task ShouldChainManagedWireWithBasicAuth()
+    {
+        var handler = new MockHttpMessageHandler(request =>
+        {
+            Assert.IsTrue(request.Headers.Contains(HttpHeaders.AUTHORIZATION));
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        });
+        var managedWire = new ManagedHttpWire(() => new HttpClient(handler));
+        var wire = new BasicAuthWire(managedWire, "Bearer test-token");
+        HttpResponseMessage response = await wire.SendAsync("GET", "https://api.example.com", []);
+        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+    }
 }
