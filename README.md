@@ -95,6 +95,52 @@ var response = new BaseRequest("https://api.example.com")
     .Fetch();
 ```
 
+## HttpClient Lifecycle
+
+The default `new HttpWire()` constructor creates `new HttpClient()` and holds
+it for the wire's lifetime. This is fine for short-lived apps but causes
+**socket exhaustion** and **stale DNS** in long-running server applications.
+
+### Console apps / one-shot scripts
+
+For short-lived processes, a single `HttpClient` instance is all you need:
+
+```csharp
+using var client = new HttpClient { BaseAddress = new Uri("https://api.example.com") };
+var wire = new HttpWire(client);
+var user = await new BaseRequest("/users/1", wire).FetchAsync();
+```
+
+### ASP.NET Core / long-running services
+
+Use `IHttpClientFactory` via `ManagedHttpWire` — it creates and disposes
+an `HttpClient` per request, letting the factory manage handler pooling and DNS
+rotation:
+
+```csharp
+// Program.cs
+builder.Services.AddHttpClient();
+builder.Services.AddSingleton<IWire>(sp =>
+    new ManagedHttpWire(() => sp.GetRequiredService<IHttpClientFactory>().CreateClient()));
+```
+
+With a named client for custom settings:
+
+```csharp
+builder.Services.AddHttpClient("github", c =>
+{
+    c.BaseAddress = new Uri("https://api.github.com");
+    c.DefaultRequestHeaders.Add("User-Agent", "MyApp");
+});
+builder.Services.AddSingleton<IWire>(sp =>
+    new ManagedHttpWire(() => sp.GetRequiredService<IHttpClientFactory>().CreateClient("github")));
+```
+
+`ManagedHttpWire` is stateless and can be registered as a **Singleton**.
+
+> **Warning**: Avoid `new HttpWire()` (parameterless) in server applications.
+> It creates an unmanaged `HttpClient` that will exhaust sockets over time.
+
 ## Wire System
 
 SergeiM.Http uses a wire system for sending HTTP requests, allowing
@@ -102,7 +148,8 @@ you to customize and extend request handling through decorators.
 
 ### Basic Wire Usage
 
-By default, requests use `HttpWire`:
+By default, requests use `HttpWire` internally. For long-running applications,
+prefer `ManagedHttpWire` with `IHttpClientFactory` (see [HttpClient Lifecycle](#httpclient-lifecycle)).
 
 ```csharp
 var response = await new BaseRequest("https://api.example.com").FetchAsync();
@@ -113,7 +160,8 @@ var response = await new BaseRequest("https://api.example.com").FetchAsync();
 You can specify a custom wire implementation:
 
 ```csharp
-var response = await new BaseRequest("https://api.example.com", new HttpWire()).FetchAsync();
+var response = await new BaseRequest("https://api.example.com",
+    new ManagedHttpWire(() => new HttpClient())).FetchAsync();
 ```
 
 ### Changing Wire with Through()
@@ -122,7 +170,7 @@ Change the wire at any point using the `Through()` method:
 
 ```csharp
 var response = await new BaseRequest("https://api.example.com")
-    .Through(new HttpWire())
+    .Through(new ManagedHttpWire(() => new HttpClient()))
     .FetchAsync();
 ```
 
@@ -132,7 +180,9 @@ Add authorization headers to requests:
 
 ```csharp
 var response = await new BaseRequest("https://api.example.com")
-    .Through(new BasicAuthWire(new HttpWire(), "Bearer your-token"))
+    .Through(new BasicAuthWire(
+        new ManagedHttpWire(() => new HttpClient()),
+        "Bearer your-token"))
     .FetchAsync();
 ```
 
@@ -142,7 +192,7 @@ Add automatic retry logic for failed requests:
 
 ```csharp
 var response = await new BaseRequest("https://api.example.com", new RetryWire(
-    new HttpWire(),
+    new ManagedHttpWire(() => new HttpClient()),
     maxRetries: 5,
     delayBetweenRetries: TimeSpan.FromSeconds(2)
 )).FetchAsync();
@@ -155,7 +205,7 @@ Combine multiple decorators for advanced functionality:
 ```csharp
 var wire = new RetryWire(
     new BasicAuthWire(
-        new HttpWire(),
+        new ManagedHttpWire(() => new HttpClient()),
         "Bearer token"
     ),
     maxRetries: 3,
@@ -170,10 +220,14 @@ Or fluently with `Through()`:
 
 ```csharp
 var response = await new BaseRequest("https://api.example.com")
-    .Through(new BasicAuthWire(new HttpWire(), "Bearer token"))
+    .Through(new BasicAuthWire(
+        new ManagedHttpWire(() => new HttpClient()),
+        "Bearer token"))
     .Uri().Path("/protected-resource").Back()
     .Through(new RetryWire(
-        new BasicAuthWire(new HttpWire(), "Bearer token"),
+        new BasicAuthWire(
+            new ManagedHttpWire(() => new HttpClient()),
+            "Bearer token"),
         3,
         TimeSpan.FromSeconds(2)
     ))
