@@ -12,11 +12,13 @@ path = [
   ".markdownlint-cli2.yaml",
   "release-please-config.json",
   ".release-please-manifest.json",
+  ".editorconfig",
   "**.md",
   "**/*.runsettings",
   "**/*.props",
   "**/*.csproj",
-  "**/*.sln"
+  "**/*.sln",
+  "**/*.lock.json"
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "Copyright (c) [2025-2026] [Sergei Mukhin]"
