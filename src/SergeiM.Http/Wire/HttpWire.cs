@@ -31,7 +31,7 @@ public class HttpWire : IWire
     public async Task<HttpResponseMessage> SendAsync(string method, string uri, Dictionary<string, string> headers, string? body = null)
     {
         using HttpRequestMessage request = WireHelper.BuildRequest(method, uri, headers, body);
-        return await _client.SendAsync(request);
+        return await _client.SendAsync(request).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
