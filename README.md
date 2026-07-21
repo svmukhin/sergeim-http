@@ -19,23 +19,22 @@ dotnet add package SergeiM.Http
 ### Simple GET Request
 
 ```csharp
-var response = new Request("https://api.example.com")
+var response = await new BaseRequest("https://api.example.com")
     .Uri().Path("/users").QueryParam("id", 123).Back()
-    .Method(Request.GET)
-    .Fetch();
+    .Method(BaseRequest.GET)
+    .FetchAsync();
 ```
 
 ### JSON Response
 
 ```csharp
-var response = new Request("https://api.example.com")
+var response = await new BaseRequest("https://api.example.com")
     .Uri().Path("/users").QueryParam("id", 123).Back()
     .Header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON)
-    .Fetch()
-    .As<JsonResponse>()
-    .AssertStatus(200);
+    .FetchAsync();
 
-var user = response.AsObject();
+var json = response.As<JsonResponse>().AssertStatus(200);
+var user = json.AsObject();
 string userName = user.GetString("name");
 int age = user.GetInt("age");
 bool isActive = user.GetBoolean("is_active", false);
@@ -44,11 +43,12 @@ bool isActive = user.GetBoolean("is_active", false);
 ### XML Response with XPath
 
 ```csharp
-string href = new Request("https://api.example.com")
+var response = await new BaseRequest("https://api.example.com")
     .Uri().Path("/data").Back()
     .Header(HttpHeaders.ACCEPT, MediaType.TEXT_XML)
-    .Fetch()
-    .As<XmlResponse>()
+    .FetchAsync();
+
+string href = response.As<XmlResponse>()
     .AssertStatus(200)
     .AssertXPath("/page/links/link[@rel='see']")
     .EvaluateXPath("/page/links/link[@rel='see']/@href");
@@ -57,18 +57,42 @@ string href = new Request("https://api.example.com")
 ### Complex Chaining Example
 
 ```csharp
-string name = new Request("https://www.example.com:8080")
+var firstResponse = await new BaseRequest("https://www.example.com:8080")
     .Uri().Path("/users").QueryParam("id", 333).Back()
-    .Method(Request.GET)
+    .Method(BaseRequest.GET)
     .Header(HttpHeaders.ACCEPT, MediaType.TEXT_XML)
-    .Fetch()
-    .As<RestResponse>()
-    .AssertStatus(200)
+    .FetchAsync();
+
+var secondResponse = await firstResponse
     .As<XmlResponse>()
+    .AssertStatus(200)
     .AssertXPath("/page/links/link[@rel='see']")
     .Rel("/page/links/link[@rel='see']/@href")
     .Header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON)
-    .Fetch()
+    .FetchAsync();
+```
+
+## Synchronous Methods (Blocks Threads)
+
+The library also exposes synchronous wrappers for backward compatibility and scripting
+scenarios. These methods call their async counterparts via `.GetAwaiter().GetResult()`,
+which blocks the calling thread and can lead to deadlocks in UI or ASP.NET contexts.
+
+| Sync method / property | Async alternative       | Blocks on             |
+| ---------------------- | ----------------------- | --------------------- |
+| `IRequest.Fetch()`     | `IRequest.FetchAsync()` | `FetchAsync()`        |
+| `IWire.Send()`         | `IWire.SendAsync()`     | `SendAsync()`         |
+| `IResponse.Content`    | — (always blocking)     | `ReadAsStringAsync()` |
+
+**Prefer `FetchAsync()` and `SendAsync()` in all new code.**
+
+### Synchronous usage (not recommended)
+
+```csharp
+var response = new BaseRequest("https://api.example.com")
+    .Uri().Path("/users").QueryParam("id", 123).Back()
+    .Method(BaseRequest.GET)
+    .Fetch();
 ```
 
 ## Wire System
@@ -81,7 +105,7 @@ you to customize and extend request handling through decorators.
 By default, requests use `HttpWire`:
 
 ```csharp
-var response = new Request("https://api.example.com").Fetch();
+var response = await new BaseRequest("https://api.example.com").FetchAsync();
 ```
 
 ### Custom Wire
@@ -89,7 +113,7 @@ var response = new Request("https://api.example.com").Fetch();
 You can specify a custom wire implementation:
 
 ```csharp
-var response = new Request("https://api.example.com", new HttpWire()).Fetch();
+var response = await new BaseRequest("https://api.example.com", new HttpWire()).FetchAsync();
 ```
 
 ### Changing Wire with Through()
@@ -97,9 +121,9 @@ var response = new Request("https://api.example.com", new HttpWire()).Fetch();
 Change the wire at any point using the `Through()` method:
 
 ```csharp
-var response = new Request("https://api.example.com")
+var response = await new BaseRequest("https://api.example.com")
     .Through(new HttpWire())
-    .Fetch();
+    .FetchAsync();
 ```
 
 ### Authorization Wire
@@ -107,9 +131,9 @@ var response = new Request("https://api.example.com")
 Add authorization headers to requests:
 
 ```csharp
-var response = new Request("https://api.example.com")
+var response = await new BaseRequest("https://api.example.com")
     .Through(new BasicAuthWire(new HttpWire(), "Bearer your-token"))
-    .Fetch();
+    .FetchAsync();
 ```
 
 ### Retry Wire
@@ -117,11 +141,11 @@ var response = new Request("https://api.example.com")
 Add automatic retry logic for failed requests:
 
 ```csharp
-var response = new Request("https://api.example.com", new RetryWire(
+var response = await new BaseRequest("https://api.example.com", new RetryWire(
     new HttpWire(),
     maxRetries: 5,
     delayBetweenRetries: TimeSpan.FromSeconds(2)
-)).Fetch();
+)).FetchAsync();
 ```
 
 ### Chaining Wire Decorators
@@ -137,15 +161,15 @@ var wire = new RetryWire(
     maxRetries: 3,
     delayBetweenRetries: TimeSpan.FromSeconds(1)
 );
-var response = new Request("https://api.example.com", wire)
+var response = await new BaseRequest("https://api.example.com", wire)
     .Uri().Path("/data").Back()
-    .Fetch();
+    .FetchAsync();
 ```
 
 Or fluently with `Through()`:
 
 ```csharp
-var response = new Request("https://api.example.com")
+var response = await new BaseRequest("https://api.example.com")
     .Through(new BasicAuthWire(new HttpWire(), "Bearer token"))
     .Uri().Path("/protected-resource").Back()
     .Through(new RetryWire(
@@ -153,12 +177,14 @@ var response = new Request("https://api.example.com")
         3,
         TimeSpan.FromSeconds(2)
     ))
-    .Fetch();
+    .FetchAsync();
 ```
 
 ### Custom Wire Implementation
 
-Create your own wire by implementing `IWire`:
+Create your own wire by implementing `IWire`. Always implement `SendAsync()` as
+the primary method. The synchronous `Send()` method is provided for backward
+compatibility — it blocks the calling thread and should be avoided in new code.
 
 ```csharp
 public class LoggingWire : IWire
@@ -168,7 +194,7 @@ public class LoggingWire : IWire
 
     public LoggingWire(IWire origin, ILogger logger)
     {
-        _origin_ = origin;
+        _origin = origin;
         _logger = logger;
     }
 
@@ -179,11 +205,13 @@ public class LoggingWire : IWire
         string? body = null)
     {
         _logger.Log($"Sending {method} request to {uri}");
-        var response = await _innerWire.SendAsync(method, uri, headers, body);
+        var response = await _origin.SendAsync(method, uri, headers, body);
         _logger.Log($"Received {response.StatusCode} from {uri}");
         return response;
     }
 
+    // Provided for sync consumers only — blocks the calling thread.
+    // Prefer SendAsync() in new code.
     public HttpResponseMessage Send(
         string method,
         string uri,
@@ -213,15 +241,15 @@ This project follows [Conventional Commits](https://www.conventionalcommits.org/
 to automate versioning and changelog generation via
 [release-please](https://github.com/googleapis/release-please).
 
-| Type       | Purpose                              | Bump    |
-| ---------- | ------------------------------------ | ------- |
-| `feat`     | New feature                          | minor   |
-| `fix`      | Bug fix                              | patch   |
-| `docs`     | Documentation only changes           | —       |
-| `style`    | Code style (formatting, whitespace)  | —       |
-| `refactor` | Code refactoring                     | —       |
-| `test`     | Adding or updating tests             | —       |
-| `chore`    | Maintenance (CI, deps, etc.)         | —       |
+| Type       | Purpose                             | Bump  |
+| ---------- | ----------------------------------- | ----- |
+| `feat`     | New feature                         | minor |
+| `fix`      | Bug fix                             | patch |
+| `docs`     | Documentation only changes          | —     |
+| `style`    | Code style (formatting, whitespace) | —     |
+| `refactor` | Code refactoring                    | —     |
+| `test`     | Adding or updating tests            | —     |
+| `chore`    | Maintenance (CI, deps, etc.)        | —     |
 
 Breaking changes are signaled with `!` after the type (`feat!:`)
 or a `BREAKING CHANGE:` footer — triggers a major bump.
