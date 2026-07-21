@@ -19,7 +19,7 @@ public class BasicAuthWireTests
             receivedHeaders = headers;
             return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
         });
-        var response = await new BasicAuthWire(
+        HttpResponseMessage response = await new BasicAuthWire(
             mockWire,
             "Bearer test-token").SendAsync("GET", "https://api.example.com", []);
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
@@ -38,8 +38,8 @@ public class BasicAuthWireTests
         {
             ["X-Custom"] = "Value"
         };
-        var originalCount = headers.Count;
-        await new BasicAuthWire(
+        int originalCount = headers.Count;
+        _ = await new BasicAuthWire(
             mockWire,
             "Bearer test-token").SendAsync("GET", "https://api.example.com", headers);
         Assert.AreEqual(originalCount, headers.Count);
@@ -54,7 +54,7 @@ public class BasicAuthWireTests
             Assert.IsTrue(request.Headers.Contains("X-Custom"));
             return new HttpResponseMessage(HttpStatusCode.OK);
         });
-        var response = await new BasicAuthWire(
+        HttpResponseMessage response = await new BasicAuthWire(
             new HttpWire(new HttpClient(handler)),
             "Bearer test-token").SendAsync("GET", "https://api.example.com", new Dictionary<string, string>
             {
@@ -68,11 +68,11 @@ public class BasicAuthWireTests
     {
         var handler = new MockHttpMessageHandler(async (request) =>
         {
-            var body = await request.Content!.ReadAsStringAsync();
+            string body = await request.Content!.ReadAsStringAsync();
             Assert.AreEqual("{\"data\":\"test\"}", body);
             return new HttpResponseMessage(HttpStatusCode.OK);
         });
-        var response = await new BasicAuthWire(
+        HttpResponseMessage response = await new BasicAuthWire(
             new HttpWire(new HttpClient(handler)),
             "Bearer test-token").SendAsync("POST", "https://api.example.com", [], "{\"data\":\"test\"}");
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);

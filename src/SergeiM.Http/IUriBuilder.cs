@@ -12,20 +12,20 @@ public interface IUriBuilder
     /// Returns to the parent request builder.
     /// </summary>
     /// <returns>The parent request instance.</returns>
-    IRequest Back();
+    public IRequest Back();
 
     /// <summary>
     /// Builds and returns the complete URI as a string.
     /// </summary>
     /// <returns>The constructed URI.</returns>
-    string Build();
+    public string Build();
 
     /// <summary>
     /// Appends a path segment to the URI.
     /// </summary>
     /// <param name="pathSegment">The path segment to append (e.g., "/users" or "users").</param>
     /// <returns>The current URI builder instance for method chaining.</returns>
-    IUriBuilder Path(string pathSegment);
+    public IUriBuilder Path(string pathSegment);
 
     /// <summary>
     /// Adds a query parameter to the URI.
@@ -33,5 +33,5 @@ public interface IUriBuilder
     /// <param name="name">The query parameter name.</param>
     /// <param name="value">The query parameter value. Will be converted to string and URL-encoded.</param>
     /// <returns>The current URI builder instance for method chaining.</returns>
-    IUriBuilder QueryParam(string name, object value);
+    public IUriBuilder QueryParam(string name, object value);
 }

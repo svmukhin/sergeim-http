@@ -12,7 +12,7 @@ public class XmlResponseTests
     [TestMethod]
     public void XmlResponse_ShouldParseXml()
     {
-        var xml = """
+        string xml = """
             <?xml version="1.0"?>
             <page>
                 <title>Test Page</title>
@@ -22,14 +22,14 @@ public class XmlResponseTests
                 </links>
             </page>
             """;
-        var title = new XmlResponse(CreateMockXmlResponse(xml)).EvaluateXPath("/page/title");
+        string title = new XmlResponse(CreateMockXmlResponse(xml)).EvaluateXPath("/page/title");
         Assert.AreEqual("Test Page", title);
     }
 
     [TestMethod]
     public void XmlResponse_ShouldAssertXPath()
     {
-        var xml = """
+        string xml = """
             <?xml version="1.0"?>
             <page>
                 <links>
@@ -37,26 +37,26 @@ public class XmlResponseTests
                 </links>
             </page>
             """;
-        new XmlResponse(CreateMockXmlResponse(xml)).AssertXPath("/page/links/link[@rel='see']");
+        _ = new XmlResponse(CreateMockXmlResponse(xml)).AssertXPath("/page/links/link[@rel='see']");
     }
 
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
     public void XmlResponse_ShouldThrowOnMissingXPath()
     {
-        var xml = """
+        string xml = """
             <?xml version="1.0"?>
             <page>
                 <title>Test</title>
             </page>
             """;
-        new XmlResponse(CreateMockXmlResponse(xml)).AssertXPath("/page/nonexistent");
+        _ = new XmlResponse(CreateMockXmlResponse(xml)).AssertXPath("/page/nonexistent");
     }
 
     [TestMethod]
     public void XmlResponse_ShouldEvaluateXPathAttribute()
     {
-        var xml = """
+        string xml = """
             <?xml version="1.0"?>
             <page>
                 <links>
@@ -64,32 +64,32 @@ public class XmlResponseTests
                 </links>
             </page>
             """;
-        var href = new XmlResponse(CreateMockXmlResponse(xml)).EvaluateXPath("/page/links/link[@rel='see']/@href");
+        string href = new XmlResponse(CreateMockXmlResponse(xml)).EvaluateXPath("/page/links/link[@rel='see']/@href");
         Assert.AreEqual("/api/details/456", href);
     }
 
     [TestMethod]
     public void XmlResponse_AssertStatus_ShouldReturnXmlResponse()
     {
-        var xml = """
+        string xml = """
             <?xml version="1.0"?>
             <result>success</result>
             """;
         var response = new XmlResponse(CreateMockXmlResponse(xml));
-        var result = response.AssertStatus(200).EvaluateXPath("/result");
+        string result = response.AssertStatus(200).EvaluateXPath("/result");
         Assert.AreEqual("success", result);
     }
 
     [TestMethod]
     public void XmlResponse_AssertStatus_AfterAs_ShouldAllowChaining()
     {
-        var xml = """
+        string xml = """
             <?xml version="1.0"?>
             <data><value>test</value></data>
             """;
-        var httpResponse = CreateMockXmlResponse(xml);
+        HttpResponseMessage httpResponse = CreateMockXmlResponse(xml);
         var baseResponse = new BaseResponse(httpResponse);
-        var result = baseResponse.As<XmlResponse>().AssertStatus(200).EvaluateXPath("/data/value");
+        string result = baseResponse.As<XmlResponse>().AssertStatus(200).EvaluateXPath("/data/value");
         Assert.AreEqual("test", result);
     }
 

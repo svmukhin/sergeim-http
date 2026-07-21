@@ -90,7 +90,7 @@ public class JsonResponse : BaseResponse
     /// <exception cref="HttpRequestException">Thrown when the actual status code doesn't match the expected value.</exception>
     public new JsonResponse AssertStatus(int expectedStatus)
     {
-        base.AssertStatus(expectedStatus);
+        _ = base.AssertStatus(expectedStatus);
         return this;
     }
 }
