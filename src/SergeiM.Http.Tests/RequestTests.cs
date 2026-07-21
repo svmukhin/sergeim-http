@@ -11,14 +11,14 @@ public class RequestTests
     [TestMethod]
     public void Request_ShouldBuildSimpleUri()
     {
-        var uri = new BaseRequest("https://www.example.com:8080").Uri().Path("/users").QueryParam("id", 333).Build();
+        string uri = new BaseRequest("https://www.example.com:8080").Uri().Path("/users").QueryParam("id", 333).Build();
         Assert.AreEqual("https://www.example.com:8080/users?id=333", uri);
     }
 
     [TestMethod]
     public void Request_ShouldSetMethod()
     {
-        var request = new BaseRequest("https://www.example.com")
+        IRequest request = new BaseRequest("https://www.example.com")
             .Method(BaseRequest.POST);
         Assert.IsNotNull(request);
     }
@@ -26,7 +26,7 @@ public class RequestTests
     [TestMethod]
     public void Request_ShouldSetHeaders()
     {
-        var request = new BaseRequest("https://www.example.com")
+        IRequest request = new BaseRequest("https://www.example.com")
             .Header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON)
             .Header(HttpHeaders.USER_AGENT, "FluentHttp/1.0");
         Assert.IsNotNull(request);
@@ -35,7 +35,7 @@ public class RequestTests
     [TestMethod]
     public void UriBuilder_ShouldHandleMultipleQueryParams()
     {
-        var uri = new BaseRequest("https://api.example.com").Uri()
+        string uri = new BaseRequest("https://api.example.com").Uri()
             .Path("/search")
             .QueryParam("q", "test")
             .QueryParam("page", 1)
@@ -50,7 +50,7 @@ public class RequestTests
     public void UriBuilder_ShouldReturnNewRequest()
     {
         var request = new BaseRequest("https://www.example.com");
-        var back = request.Uri().Path("/test").Back();
+        IRequest back = request.Uri().Path("/test").Back();
         Assert.AreNotSame(request, back);
     }
 
@@ -58,7 +58,7 @@ public class RequestTests
     public void WithUri_ShouldReturnNewRequest()
     {
         var request = new BaseRequest("https://www.example.com");
-        var newRequest = request.WithUri("https://api.example.com");
+        IRequest newRequest = request.WithUri("https://api.example.com");
         Assert.IsNotNull(newRequest);
         Assert.AreNotSame(request, newRequest);
     }
@@ -66,7 +66,7 @@ public class RequestTests
     [TestMethod]
     public void WithUri_ShouldAllowFurtherUriBuilding()
     {
-        var uri = new BaseRequest("https://old.example.com")
+        string uri = new BaseRequest("https://old.example.com")
             .WithUri("https://new.example.com")
             .Uri()
             .Path("/api")

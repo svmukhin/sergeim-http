@@ -51,7 +51,7 @@ public class RetryWire : IWire
         {
             try
             {
-                var response = await _origin.SendAsync(method, uri, headers, body);
+                HttpResponseMessage response = await _origin.SendAsync(method, uri, headers, body);
                 if (attempt < _maxRetries && ShouldRetryResponse(response))
                 {
                     await Task.Delay(_delayBetweenRetries);

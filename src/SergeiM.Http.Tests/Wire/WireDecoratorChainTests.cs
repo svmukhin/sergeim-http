@@ -26,14 +26,14 @@ public class WireDecoratorChainTests
             ),
             "Bearer test-token"
         );
-        var response = await wire.SendAsync("GET", "https://api.example.com", []);
+        HttpResponseMessage response = await wire.SendAsync("GET", "https://api.example.com", []);
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
     }
 
     [TestMethod]
     public async Task ShouldRetryWithAuthorization()
     {
-        var attemptCount = 0;
+        int attemptCount = 0;
         var mockWire = new MockWire((method, uri, headers, body) =>
         {
             attemptCount++;
@@ -49,7 +49,7 @@ public class WireDecoratorChainTests
             3,
             TimeSpan.FromMilliseconds(10)
         );
-        var response = await wire.SendAsync("GET", "https://api.example.com", []);
+        HttpResponseMessage response = await wire.SendAsync("GET", "https://api.example.com", []);
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         Assert.AreEqual(2, attemptCount);
     }
@@ -57,7 +57,7 @@ public class WireDecoratorChainTests
     [TestMethod]
     public async Task ShouldChainInReverseOrder()
     {
-        var attemptCount = 0;
+        int attemptCount = 0;
         var mockWire = new MockWire((method, uri, headers, body) =>
         {
             attemptCount++;
@@ -72,7 +72,7 @@ public class WireDecoratorChainTests
             new RetryWire(mockWire, 3, TimeSpan.FromMilliseconds(10)),
             "Bearer test-token"
         );
-        var response = await wire.SendAsync("GET", "https://api.example.com", []);
+        HttpResponseMessage response = await wire.SendAsync("GET", "https://api.example.com", []);
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         Assert.AreEqual(2, attemptCount);
     }
@@ -80,7 +80,7 @@ public class WireDecoratorChainTests
     [TestMethod]
     public async Task ShouldChainMultipleRetryDecorators()
     {
-        var attemptCount = 0;
+        int attemptCount = 0;
         var mockWire = new MockWire((method, uri, headers, body) =>
         {
             attemptCount++;
@@ -95,7 +95,7 @@ public class WireDecoratorChainTests
             1,
             TimeSpan.FromMilliseconds(5)
         );
-        var response = await wire.SendAsync("GET", "https://api.example.com", []);
+        HttpResponseMessage response = await wire.SendAsync("GET", "https://api.example.com", []);
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
     }
 }

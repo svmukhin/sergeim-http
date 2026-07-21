@@ -57,7 +57,7 @@ public class BaseResponse : IResponse
     /// <inheritdoc/>
     public virtual string? GetHeader(string name)
     {
-        if (_response.Headers.TryGetValues(name, out var values))
+        if (_response.Headers.TryGetValues(name, out IEnumerable<string>? values))
         {
             return values.FirstOrDefault();
         }
@@ -78,10 +78,10 @@ public class BaseResponse : IResponse
         }
 
         // Otherwise, construct it relative to the current request
-        var baseUri = _response.RequestMessage?.RequestUri?.GetLeftPart(UriPartial.Authority)
+        string baseUri = _response.RequestMessage?.RequestUri?.GetLeftPart(UriPartial.Authority)
                       ?? throw new InvalidOperationException("Cannot determine base URI");
 
-        var absoluteUri = new Uri(new Uri(baseUri), href).ToString();
+        string absoluteUri = new Uri(new Uri(baseUri), href).ToString();
         return new BaseRequest(absoluteUri);
     }
 

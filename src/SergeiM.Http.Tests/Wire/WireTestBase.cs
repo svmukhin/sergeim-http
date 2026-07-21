@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 using System.Net;
+using System.Net.Http.Headers;
 using SergeiM.Http.Tests.Wire.Mocks;
 
 namespace SergeiM.Http.Tests.Wire;
@@ -25,9 +26,9 @@ public abstract class WireTestBase
                 Content = new StringContent("Success")
             };
         });
-        var response = await CreateWire(new HttpClient(handler)).SendAsync("GET", "https://api.example.com/test", []);
+        HttpResponseMessage response = await CreateWire(new HttpClient(handler)).SendAsync("GET", "https://api.example.com/test", []);
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-        var content = await response.Content.ReadAsStringAsync();
+        string content = await response.Content.ReadAsStringAsync();
         Assert.AreEqual("Success", content);
     }
 
@@ -40,7 +41,7 @@ public abstract class WireTestBase
             Assert.AreEqual("CustomValue", request.Headers.GetValues("X-Custom-Header").First());
             return new HttpResponseMessage(HttpStatusCode.OK);
         });
-        var response = await CreateWire(new HttpClient(handler)).SendAsync("GET", "https://api.example.com", new Dictionary<string, string>
+        HttpResponseMessage response = await CreateWire(new HttpClient(handler)).SendAsync("GET", "https://api.example.com", new Dictionary<string, string>
         {
             ["X-Custom-Header"] = "CustomValue"
         });
@@ -52,11 +53,11 @@ public abstract class WireTestBase
     {
         var handler = new MockHttpMessageHandler(async (request) =>
         {
-            var body = await request.Content!.ReadAsStringAsync();
+            string body = await request.Content!.ReadAsStringAsync();
             Assert.AreEqual("{\"test\":\"data\"}", body);
             return new HttpResponseMessage(HttpStatusCode.OK);
         });
-        var response = await CreateWire(new HttpClient(handler)).SendAsync("POST", "https://api.example.com", [], "{\"test\":\"data\"}");
+        HttpResponseMessage response = await CreateWire(new HttpClient(handler)).SendAsync("POST", "https://api.example.com", [], "{\"test\":\"data\"}");
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -67,7 +68,7 @@ public abstract class WireTestBase
         {
             return new HttpResponseMessage(HttpStatusCode.OK);
         });
-        var response = CreateWire(new HttpClient(handler)).Send("GET", "https://api.example.com", []);
+        HttpResponseMessage response = CreateWire(new HttpClient(handler)).Send("GET", "https://api.example.com", []);
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -76,11 +77,11 @@ public abstract class WireTestBase
     {
         var handler = new MockHttpMessageHandler((request) =>
         {
-            var ct = request.Content!.Headers.ContentType;
+            MediaTypeHeaderValue? ct = request.Content!.Headers.ContentType;
             Assert.AreEqual("application/json", ct!.MediaType);
             return new HttpResponseMessage(HttpStatusCode.OK);
         });
-        await CreateWire(new HttpClient(handler)).SendAsync("POST", "https://api.example.com", new Dictionary<string, string>
+        _ = await CreateWire(new HttpClient(handler)).SendAsync("POST", "https://api.example.com", new Dictionary<string, string>
         {
             ["Content-Type"] = "application/json"
         }, "{\"test\":\"data\"}");
@@ -91,12 +92,12 @@ public abstract class WireTestBase
     {
         var handler = new MockHttpMessageHandler((request) =>
         {
-            var ct = request.Content!.Headers.ContentType;
+            MediaTypeHeaderValue? ct = request.Content!.Headers.ContentType;
             Assert.AreEqual("text/xml", ct!.MediaType);
             Assert.AreEqual("utf-8", ct.CharSet);
             return new HttpResponseMessage(HttpStatusCode.OK);
         });
-        await CreateWire(new HttpClient(handler)).SendAsync("POST", "https://api.example.com", new Dictionary<string, string>
+        _ = await CreateWire(new HttpClient(handler)).SendAsync("POST", "https://api.example.com", new Dictionary<string, string>
         {
             ["Content-Type"] = "text/xml; charset=utf-8"
         }, "<root/>");
@@ -108,14 +109,14 @@ public abstract class WireTestBase
         const string soapAction = "http://example.com/MyService/MyAction";
         var handler = new MockHttpMessageHandler((request) =>
         {
-            var ct = request.Content!.Headers.ContentType;
+            MediaTypeHeaderValue? ct = request.Content!.Headers.ContentType;
             Assert.AreEqual("application/soap+xml", ct!.MediaType);
-            var actionParam = ct.Parameters.FirstOrDefault(p => p.Name == "action");
+            NameValueHeaderValue? actionParam = ct.Parameters.FirstOrDefault(p => p.Name == "action");
             Assert.IsNotNull(actionParam);
             Assert.AreEqual($"\"{soapAction}\"", actionParam.Value);
             return new HttpResponseMessage(HttpStatusCode.OK);
         });
-        await CreateWire(new HttpClient(handler)).SendAsync("POST", "https://api.example.com", new Dictionary<string, string>
+        _ = await CreateWire(new HttpClient(handler)).SendAsync("POST", "https://api.example.com", new Dictionary<string, string>
         {
             ["Content-Type"] = $"application/soap+xml; action=\"{soapAction}\""
         }, "<Envelope/>");

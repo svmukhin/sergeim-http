@@ -37,11 +37,11 @@ public class HttpWire : IWire
         if (headersCopy.ContainsKey("Content-Type"))
         {
             contentType = headersCopy["Content-Type"];
-            headersCopy.Remove("Content-Type");
+            _ = headersCopy.Remove("Content-Type");
         }
-        foreach (var header in headersCopy)
+        foreach (KeyValuePair<string, string> header in headersCopy)
         {
-            request.Headers.TryAddWithoutValidation(header.Key, header.Value);
+            _ = request.Headers.TryAddWithoutValidation(header.Key, header.Value);
         }
         if (body != null)
         {

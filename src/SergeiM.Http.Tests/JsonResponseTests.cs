@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 using SergeiM.Http.Response;
+using SergeiM.Json;
 
 namespace SergeiM.Http.Tests;
 
@@ -11,12 +12,12 @@ public class JsonResponseTests
     [TestMethod]
     public void JsonResponse_ShouldParseJsonObject()
     {
-        var json = """{"name": "John Doe", "age": 30, "active": true}""";
+        string json = """{"name": "John Doe", "age": 30, "active": true}""";
         var response = new JsonResponse(CreateMockJsonResponse(json));
-        var obj = response.AsObject();
-        var name = obj.GetString("name");
-        var age = obj.GetInt("age");
-        var active = obj.GetBoolean("active");
+        JsonObject obj = response.AsObject();
+        string name = obj.GetString("name");
+        int age = obj.GetInt("age");
+        bool active = obj.GetBoolean("active");
         Assert.AreEqual("John Doe", name);
         Assert.AreEqual(30, age);
         Assert.AreEqual(true, active);
@@ -25,20 +26,20 @@ public class JsonResponseTests
     [TestMethod]
     public void JsonResponse_ShouldAccessNestedProperties()
     {
-        var json = @"{""user"": {""name"": ""Jane"", ""email"": ""jane@example.com""}}";
+        string json = @"{""user"": {""name"": ""Jane"", ""email"": ""jane@example.com""}}";
         var response = new JsonResponse(CreateMockJsonResponse(json));
-        var obj = response.AsObject();
-        var name = obj.GetJsonObject("user")!.GetString("name");
+        JsonObject obj = response.AsObject();
+        string name = obj.GetJsonObject("user")!.GetString("name");
         Assert.AreEqual("Jane", name);
     }
 
     [TestMethod]
     public void JsonArray_ShouldAccessElements()
     {
-        var json = @"{""items"": [""apple"", ""banana"", ""cherry""]}";
+        string json = @"{""items"": [""apple"", ""banana"", ""cherry""]}";
         var response = new JsonResponse(CreateMockJsonResponse(json));
-        var obj = response.AsObject();
-        var items = obj.GetJsonArray("items")!;
+        JsonObject obj = response.AsObject();
+        JsonArray items = obj.GetJsonArray("items")!;
         Assert.AreEqual(3, items.Count);
         Assert.AreEqual("apple", items.GetString(0));
         Assert.AreEqual("banana", items.GetString(1));
@@ -47,19 +48,19 @@ public class JsonResponseTests
     [TestMethod]
     public void JsonResponse_AssertStatus_ShouldReturnJsonResponse()
     {
-        var json = @"{""result"": ""success""}";
+        string json = @"{""result"": ""success""}";
         var response = new JsonResponse(CreateMockJsonResponse(json));
-        var result = response.AssertStatus(200).AsObject();
+        JsonObject result = response.AssertStatus(200).AsObject();
         Assert.AreEqual("success", result.GetString("result"));
     }
 
     [TestMethod]
     public void JsonResponse_AssertStatus_AfterAs_ShouldAllowChaining()
     {
-        var json = @"{""value"": 42}";
-        var httpResponse = CreateMockJsonResponse(json);
+        string json = @"{""value"": 42}";
+        HttpResponseMessage httpResponse = CreateMockJsonResponse(json);
         var baseResponse = new BaseResponse(httpResponse);
-        var result = baseResponse.As<JsonResponse>().AssertStatus(200).AsObject();
+        JsonObject result = baseResponse.As<JsonResponse>().AssertStatus(200).AsObject();
         Assert.AreEqual(42, result.GetInt("value"));
     }
 

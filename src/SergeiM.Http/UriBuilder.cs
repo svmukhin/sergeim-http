@@ -23,7 +23,7 @@ public class UriBuilder : IUriBuilder
         BaseUri = $"{uri.Scheme}://{uri.Authority}";
         if (!string.IsNullOrEmpty(uri.AbsolutePath) && uri.AbsolutePath != "/")
         {
-            _path.Append(uri.AbsolutePath);
+            _ = _path.Append(uri.AbsolutePath);
         }
         if (!string.IsNullOrEmpty(uri.Query))
         {
@@ -38,9 +38,9 @@ public class UriBuilder : IUriBuilder
     {
         if (!pathSegment.StartsWith("/"))
         {
-            _path.Append('/');
+            _ = _path.Append('/');
         }
-        _path.Append(pathSegment);
+        _ = _path.Append(pathSegment);
         return this;
     }
 
@@ -63,12 +63,12 @@ public class UriBuilder : IUriBuilder
         var sb = new StringBuilder(BaseUri);
         if (_path.Length > 0)
         {
-            sb.Append(_path);
+            _ = sb.Append(_path);
         }
         if (_queryParams.Count > 0)
         {
-            sb.Append('?');
-            sb.Append(string.Join("&", _queryParams.Select(kvp =>
+            _ = sb.Append('?');
+            _ = sb.Append(string.Join("&", _queryParams.Select(kvp =>
                 $"{Uri.EscapeDataString(kvp.Key)}={Uri.EscapeDataString(kvp.Value)}")));
         }
         return sb.ToString();
@@ -80,12 +80,12 @@ public class UriBuilder : IUriBuilder
         {
             query = query.Substring(1);
         }
-        var pairs = query.Split('&');
-        foreach (var pair in pairs)
+        string[] pairs = query.Split('&');
+        foreach (string pair in pairs)
         {
-            var parts = pair.Split('=', 2);
-            var key = Uri.UnescapeDataString(parts[0]);
-            var value = parts.Length > 1 ? Uri.UnescapeDataString(parts[1]) : string.Empty;
+            string[] parts = pair.Split('=', 2);
+            string key = Uri.UnescapeDataString(parts[0]);
+            string value = parts.Length > 1 ? Uri.UnescapeDataString(parts[1]) : string.Empty;
             _queryParams[key] = value;
         }
     }

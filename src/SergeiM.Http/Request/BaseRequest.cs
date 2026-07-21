@@ -158,7 +158,7 @@ public class BaseRequest : IRequest
         {
             headers[HttpHeaders.CONTENT_TYPE] = _contentType;
         }
-        var response = await _wire.SendAsync(_method, _home, headers, _body);
+        HttpResponseMessage response = await _wire.SendAsync(_method, _home, headers, _body);
         return new BaseResponse(response);
     }
 

@@ -65,7 +65,7 @@ public class XmlResponse : BaseResponse
     /// </summary>
     public string EvaluateXPath(string xpath)
     {
-        var result = Navigator.Evaluate(xpath);
+        object result = Navigator.Evaluate(xpath);
         if (result is XPathNodeIterator iterator)
         {
             if (iterator.MoveNext())
@@ -80,7 +80,7 @@ public class XmlResponse : BaseResponse
     /// <inheritdoc/>
     public override IRequest Rel(string xpath)
     {
-        var href = EvaluateXPath(xpath);
+        string href = EvaluateXPath(xpath);
         return base.Rel(href);
     }
 
@@ -92,7 +92,7 @@ public class XmlResponse : BaseResponse
     /// <exception cref="HttpRequestException">Thrown when the actual status code doesn't match the expected value.</exception>
     public new XmlResponse AssertStatus(int expectedStatus)
     {
-        base.AssertStatus(expectedStatus);
+        _ = base.AssertStatus(expectedStatus);
         return this;
     }
 }
