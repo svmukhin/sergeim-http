@@ -51,10 +51,10 @@ public class RetryWire : IWire
         {
             try
             {
-                HttpResponseMessage response = await _origin.SendAsync(method, uri, headers, body);
+                HttpResponseMessage response = await _origin.SendAsync(method, uri, headers, body).ConfigureAwait(false);
                 if (attempt < _maxRetries && ShouldRetryResponse(response))
                 {
-                    await Task.Delay(_delayBetweenRetries);
+                    await Task.Delay(_delayBetweenRetries).ConfigureAwait(false);
                     continue;
                 }
                 return response;
@@ -64,7 +64,7 @@ public class RetryWire : IWire
                 lastException = ex;
                 if (attempt < _maxRetries)
                 {
-                    await Task.Delay(_delayBetweenRetries);
+                    await Task.Delay(_delayBetweenRetries).ConfigureAwait(false);
                 }
                 else
                 {
